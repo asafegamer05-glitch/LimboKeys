@@ -1,7 +1,8 @@
 # 🗝️ Limbo Keys | v1.0
 
-![Status](https://img.shields.io/badge/Status-Conclu%C3%ADdo-brightgreen)
-![Size](https://img.shields.io/badge/Tamanho-726KB-blue)
+![Status](https://img.shields.io/badge/Status-Conclu%C3%ADdo-brightgreen?style=for-the-badge)
+![Size](https://img.shields.io/badge/Tamanho-3MB-blue?style=for-the-badge)
+![Engine](https://img.shields.io/badge/Engine-Electron-informational?style=for-the-badge&logo=electron)
 
 **Limbo Keys** é um minigame de memória e precisão baseado na mecânica final do nível "Limbo" de Geometry Dash. O projeto foi construído focando em máxima performance e baixo consumo de hardware, ideal para rodar até em máquinas mais modestas sem engasgar.
 
@@ -12,7 +13,7 @@
 O objetivo é simples: **Focar.** As chaves iniciam um embaralhamento frenético na tela utilizando uma simulação de profundidade 3D em um ambiente 2D. Sua missão é rastrear a chave correta até o final do movimento e selecioná-la.
 
 ### ⚡ Diferenciais desta Versão
-- **Ultra-Leve:** Diferente de builds padrão de Electron que pesam 200MB+, este projeto ocupa menos de 1MB.
+- **Ultra-Leve:** Diferente de builds padrão de Electron que pesam 200MB+, este projeto ocupa uns 3MB.
 - **Silent Launch:** O jogo inicia diretamente, sem abrir janelas chatas de terminal (CMD) em segundo plano.
 - **Otimização:** Código limpo focado em processamento lógico eficiente.
 
