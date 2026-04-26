@@ -1,0 +1,153 @@
+const { app, BrowserWindow, screen, ipcMain } = require('electron');
+const path = require('path');
+
+const TOTAL = 8, W = 220, H = 260;
+const CORRECT = Math.floor(Math.random() * TOTAL);
+let keys = [], audioWin = null, loadCount = 0, started = false, shuffleActive = false, done = false;
+
+function getPositions() {
+    const a = screen.getPrimaryDisplay().workAreaSize;
+    const cx = a.width / 2, cy = a.height / 2;
+    const pos = [];
+    for (let i = 0; i < TOTAL; i++) {
+        const ang = (i / TOTAL) * Math.PI * 2 - Math.PI / 2;
+        pos.push({
+            x: Math.round(cx + Math.cos(ang) * 320 - W / 2),
+            y: Math.round(cy + Math.sin(ang) * 260 - H / 2)
+        });
+    }
+    return pos;
+}
+
+app.whenReady().then(() => {
+    const positions = getPositions();
+
+    // Janela escondida so pro audio (com icone)
+    audioWin = new BrowserWindow({
+        show: false,
+        icon: path.join(__dirname, 'icon.ico'),
+        webPreferences: { nodeIntegration: true, contextIsolation: false }
+    });
+    audioWin.loadFile('audio.html');
+
+    // 8 janelas de chave (escondidas ate carregar)
+    for (let i = 0; i < TOTAL; i++) {
+        const idx = i;
+        const w = new BrowserWindow({
+            width: W, height: H,
+            x: positions[i].x, y: positions[i].y,
+            resizable: false, minimizable: false, maximizable: false,
+            alwaysOnTop: true, show: false,
+            icon: path.join(__dirname, 'icon.ico'), // Ícone aqui para a barra de tarefas
+            webPreferences: { nodeIntegration: true, contextIsolation: false }
+        });
+        w.setMenu(null);
+        w.loadFile('key.html');
+        w.webContents.on('did-finish-load', () => {
+            w.webContents.send('init', {
+                id: idx,
+                image: idx === CORRECT ? 'images/green-key.png' : 'images/key.png'
+            });
+            loadCount++;
+            tryStart();
+        });
+        keys.push({ win: w, id: i, x: positions[i].x, y: positions[i].y, busy: false });
+    }
+});
+
+// Audio avisa que ta pronto no ponto certo
+ipcMain.on('audio-ready', () => { started = false; tryStart(); });
+
+function tryStart() {
+    if (started) return;
+    if (loadCount < TOTAL) return;
+    started = true;
+    // Mostra tudo e toca
+    keys.forEach(k => k.win.show());
+    audioWin.webContents.send('play-now');
+    // 3s preview -> shuffle
+    setTimeout(startShuffle, 3000);
+}
+
+function startShuffle() {
+    keys.forEach(k => { k.win.webContents.send('change-img', 'images/key.png'); k.busy = false; });
+    shuffleActive = true;
+    scheduleSwap();
+    for (let i = 0; i < 6; i++) {
+        setTimeout(() => { if (shuffleActive) keys.forEach(k => k.win.webContents.send('flash')); }, 1000 + Math.random() * 8000);
+    }
+    setTimeout(stopShuffle, 10000);
+}
+
+function scheduleSwap() {
+    if (!shuffleActive) return;
+    const free = keys.filter(k => !k.busy);
+    if (free.length >= 2) {
+        for (let i = free.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [free[i], free[j]] = [free[j], free[i]];
+        }
+        free[0].busy = true; free[1].busy = true;
+        doSwap(free[0], free[1], 350 + Math.random() * 150, () => {
+            free[0].busy = false; free[1].busy = false;
+        });
+    }
+    setTimeout(scheduleSwap, 200 + Math.random() * 200);
+}
+
+function doSwap(a, b, dur, cb) {
+    const ax = a.x, ay = a.y, bx = b.x, by = b.y;
+    const dx = bx - ax, dy = by - ay, arc = 0.35;
+    const caX = (ax + bx) / 2 - dy * arc, caY = (ay + by) / 2 + dx * arc;
+    const cbX = (ax + bx) / 2 + dy * arc, cbY = (ay + by) / 2 - dx * arc;
+    const t0 = Date.now();
+    function tick() {
+        const el = Date.now() - t0;
+        let t = Math.min(1, el / dur);
+        t = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        const u = 1 - t;
+        a.x = u * u * ax + 2 * u * t * caX + t * t * bx;
+        a.y = u * u * ay + 2 * u * t * caY + t * t * by;
+        b.x = u * u * bx + 2 * u * t * cbX + t * t * ax;
+        b.y = u * u * by + 2 * u * t * cbY + t * t * ay;
+        try { a.win.setPosition(Math.round(a.x), Math.round(a.y)); } catch (e) { }
+        try { b.win.setPosition(Math.round(b.x), Math.round(b.y)); } catch (e) { }
+        if (el < dur) setTimeout(tick, 16); else if (cb) cb();
+    }
+    tick();
+}
+
+function stopShuffle() {
+    shuffleActive = false;
+    
+    function checkFinished() {
+        if (keys.some(k => k.busy)) {
+            setTimeout(checkFinished, 50);
+            return;
+        }
+        
+        const imgs = [1, 2, 3, 4, 5, 6, 7, 8];
+        for (let i = imgs.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [imgs[i], imgs[j]] = [imgs[j], imgs[i]];
+        }
+
+        keys.forEach((k, i) => {
+            k.win.setPosition(Math.round(k.x), Math.round(k.y));
+            k.win.webContents.send('change-img', 'images/key' + imgs[i] + '.png');
+            k.win.webContents.send('clickable');
+        });
+        setTimeout(() => { if (!done) app.quit(); }, 6000);
+    }
+    checkFinished();
+}
+
+ipcMain.on('clicked', (e, id) => {
+    if (done) return; done = true;
+    const won = id === CORRECT;
+    keys.forEach(k => { try { k.win.webContents.send('result', won); } catch (e) { } });
+    audioWin.webContents.send('stop-music');
+    setTimeout(() => app.quit(), 2500);
+});
+
+app.on('window-all-closed', () => app.quit());

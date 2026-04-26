@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+<audio id="m" preload="auto" src="sounds/limbo.mp3"></audio>
+<script>
+const { ipcRenderer } = require('electron');
+const m = document.getElementById('m');
+
+m.addEventListener('loadeddata', () => {
+    m.currentTime = 178.3;
+});
+m.addEventListener('seeked', () => {
+    ipcRenderer.send('audio-ready');
+}, { once: true });
+
+ipcRenderer.on('play-now', () => { m.play(); });
+ipcRenderer.on('stop-music', () => { m.pause(); });
+</script>
+</body>
+</html>

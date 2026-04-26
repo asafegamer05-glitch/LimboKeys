@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: #0d0d1a;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100vh;
+}
+h1 { font-size: 3em; color: #0f8; text-shadow: 0 0 20px #0f8; margin-bottom: 10px; }
+p { color: #888; margin-bottom: 30px; font-size: 1.1em; }
+#status { color: #ff0; font-size: 1.2em; margin-bottom: 20px; }
+button {
+    background: none; border: 2px solid #0f8; color: #0f8;
+    padding: 15px 40px; font-size: 1.3em; cursor: pointer;
+    transition: 0.2s;
+}
+button:hover { background: #0f8; color: #000; }
+button:disabled { border-color: #555; color: #555; cursor: default; background: none; }
+#result { font-size: 1.5em; margin-top: 20px; display: none; }
+</style>
+</head>
+<body>
+<h1>LIMBO</h1>
+<p>Encontre a chave verde.</p>
+<div id="status">Carregando música...</div>
+<button id="btn" disabled>JOGAR</button>
+<div id="result"></div>
+
+<audio id="music" preload="auto" src="sounds/limbo.mp3"></audio>
+
+<script>
+const { ipcRenderer } = require('electron');
+const music = document.getElementById('music');
+const btn = document.getElementById('btn');
+const status = document.getElementById('status');
+const result = document.getElementById('result');
+
+// Pre-carrega a musica e faz seek pro 3:03
+music.addEventListener('loadeddata', () => {
+    music.currentTime = 178.3;
+});
+
+music.addEventListener('seeked', () => {
+    status.textContent = 'Pronto!';
+    btn.disabled = false;
+}, { once: true });
+
+btn.onclick = () => {
+    btn.disabled = true;
+    status.textContent = '';
+    result.style.display = 'none';
+    ipcRenderer.send('start-game');
+};
+
+ipcRenderer.on('play-music', () => {
+    music.play();
+});
+
+ipcRenderer.on('stop-music', () => {
+    music.pause();
+});
+
+ipcRenderer.on('show-result', (e, won) => {
+    btn.disabled = false;
+    result.style.display = 'block';
+    result.textContent = won ? '✅ FOCO TOTAL! VOCÊ ACERTOU!' : '❌ ERROU! TENTE NOVAMENTE.';
+    result.style.color = won ? '#0f8' : '#f44';
+});
+</script>
+</body>
+</html>
