@@ -30,7 +30,8 @@ Para rodar o jogo, você só precisa do motor **Node.js** instalado no seu siste
 ## 🛠️ Como Instalar e Rodar
 
 1.  **Baixe o Projeto:** Extraia a pasta `.zip` em qualquer lugar do seu computador.
-2.  **Instale as Dependências (Opcional):** Se a pasta `node_modules` não estiver inclusa, abra o terminal na pasta e digite:
+2.  **Instale as Dependências (Opcional):** A `node_modules` não esta
+      inclusa, abra o terminal na pasta e digite:
     ```bash
     npm install
     ```
