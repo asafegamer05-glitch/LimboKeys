@@ -3,7 +3,8 @@ const path = require('path');
 
 const TOTAL = 8, W = 220, H = 260;
 const CORRECT = Math.floor(Math.random() * TOTAL);
-let keys = [], audioWin = null, loadCount = 0, started = false, shuffleActive = false, done = false;
+let keys = [], audioWin = null, menuWin = null, loadCount = 0, started = false, shuffleActive = false, done = false, audioReady = false;
+let speedMultiplier = 1.0;
 
 function getPositions() {
     const a = screen.getPrimaryDisplay().workAreaSize;
@@ -20,6 +21,33 @@ function getPositions() {
 }
 
 app.whenReady().then(() => {
+    menuWin = new BrowserWindow({
+        width: 900, height: 600,
+        resizable: false,
+        icon: path.join(__dirname, 'icon.ico'),
+        webPreferences: { nodeIntegration: true, contextIsolation: false }
+    });
+    menuWin.setMenu(null);
+    menuWin.loadFile('menu.html');
+});
+
+ipcMain.on('start-game', (e, diff) => {
+    if (diff === 'easy') speedMultiplier = 1.2;
+    else if (diff === 'normal') speedMultiplier = 1.0;
+    else if (diff === 'dificil') speedMultiplier = 0.85;
+    else if (diff === 'easy_demon') speedMultiplier = 0.7;
+    else if (diff === 'extreme_demon') speedMultiplier = 0.55;
+    else if (diff === 'secret_67') speedMultiplier = 0.15;
+    else if (diff === 'secret_666') speedMultiplier = 0.40;
+    else if (diff === 'secret_123') speedMultiplier = 10000;
+
+    if (menuWin) {
+        menuWin.hide(); // Hide to prevent visual glitch, closed later
+    }
+    startGameWindows();
+});
+
+function startGameWindows() {
     const positions = getPositions();
 
     // Janela escondida so pro audio (com icone)
@@ -53,15 +81,19 @@ app.whenReady().then(() => {
         });
         keys.push({ win: w, id: i, x: positions[i].x, y: positions[i].y, busy: false });
     }
-});
+}
 
 // Audio avisa que ta pronto no ponto certo
-ipcMain.on('audio-ready', () => { started = false; tryStart(); });
+ipcMain.on('audio-ready', () => { audioReady = true; tryStart(); });
 
 function tryStart() {
     if (started) return;
-    if (loadCount < TOTAL) return;
+    if (loadCount < TOTAL || !audioReady) return;
     started = true;
+    if (menuWin) {
+        menuWin.close();
+        menuWin = null;
+    }
     // Mostra tudo e toca
     keys.forEach(k => k.win.show());
     audioWin.webContents.send('play-now');
@@ -72,7 +104,12 @@ function tryStart() {
 function startShuffle() {
     keys.forEach(k => { k.win.webContents.send('change-img', 'images/key.png'); k.busy = false; });
     shuffleActive = true;
-    scheduleSwap();
+    
+    // Se não for o modo super fácil, faz o shuffle
+    if (speedMultiplier < 1000) {
+        scheduleSwap();
+    }
+    
     for (let i = 0; i < 6; i++) {
         setTimeout(() => { if (shuffleActive) keys.forEach(k => k.win.webContents.send('flash')); }, 1000 + Math.random() * 8000);
     }
@@ -88,11 +125,13 @@ function scheduleSwap() {
             [free[i], free[j]] = [free[j], free[i]];
         }
         free[0].busy = true; free[1].busy = true;
-        doSwap(free[0], free[1], 350 + Math.random() * 150, () => {
+        const dur = (350 + Math.random() * 150) * speedMultiplier;
+        doSwap(free[0], free[1], dur, () => {
             free[0].busy = false; free[1].busy = false;
         });
     }
-    setTimeout(scheduleSwap, 200 + Math.random() * 200);
+    const delay = (200 + Math.random() * 200) * speedMultiplier;
+    setTimeout(scheduleSwap, delay);
 }
 
 function doSwap(a, b, dur, cb) {

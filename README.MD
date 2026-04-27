@@ -1,59 +1,76 @@
-# 🗝️ Limbo Keys | v1.0
+<div align="center">
+  <img src="images/green-key.png" width="120" alt="Limbo Key">
+  <h1>🗝️ Limbo Keys 🗝️</h1>
+  <p><b>Focus. Memory. Precision.</b></p>
+  
+  [![Status](https://img.shields.io/badge/Status-Conclu%C3%ADdo-brightgreen?style=for-the-badge&logo=appveyor)](https://github.com/asafegamer05-glitch/LimboKeys)
+  [![Size](https://img.shields.io/badge/Tamanho-Super_Leve-blue?style=for-the-badge&logo=electron)](https://github.com/asafegamer05-glitch/LimboKeys)
+  [![License](https://img.shields.io/badge/Licen%C3%A7a-MIT-purple?style=for-the-badge)](https://github.com/asafegamer05-glitch/LimboKeys)
+</div>
 
-![Status](https://img.shields.io/badge/Status-Conclu%C3%ADdo-brightgreen?style=for-the-badge)
-![Size](https://img.shields.io/badge/Tamanho-3MB-blue?style=for-the-badge)
-![Engine](https://img.shields.io/badge/Engine-Electron-informational?style=for-the-badge&logo=electron)
+<br>
 
-**Limbo Keys** é um minigame de memória e precisão baseado na mecânica final do nível "Limbo" de Geometry Dash. O projeto foi construído focando em máxima performance e baixo consumo de hardware, ideal para rodar até em máquinas mais modestas sem engasgar.
+## 🎮 Sobre o Jogo
 
----
+**Limbo Keys** é um minigame intenso de memória e rastreamento visual baseado na famosa e aterrorizante mecânica final do nível *"Limbo"* do Geometry Dash. O projeto foi construído do zero focando em **máxima performance** e **baixo consumo de hardware**, projetado para rodar até em máquinas mais modestas sem nenhum engasgo!
 
-## 🎮 O Jogo
-
-O objetivo é simples: **Focar.** As chaves iniciam um embaralhamento frenético na tela utilizando uma simulação de profundidade 3D em um ambiente 2D. Sua missão é rastrear a chave correta até o final do movimento e selecioná-la.
-
-### ⚡ Diferenciais desta Versão
-- **Ultra-Leve:** Diferente de builds padrão de Electron que pesam 200MB+, este projeto ocupa uns 3MB.
-- **Silent Launch:** O jogo inicia diretamente, sem abrir janelas chatas de terminal (CMD) em segundo plano.
-- **Otimização:** Código limpo focado em processamento lógico eficiente.
-
----
-
-## 💻 Pré-requisitos
-
-Para rodar o jogo, você só precisa do motor **Node.js** instalado no seu sistema.
-
-1.  **Download do Node.js:** [Clique aqui para baixar a versão recomendada (LTS)](https://nodejs.org/dist/v20.12.2/node-v20.12.2-x64.msi)
-2.  **Site Oficial:** [nodejs.org](https://nodejs.org/)
+<details>
+<summary><b>✨ Clique aqui para ver a Lore do Jogo!</b></summary>
+Você é desafiado pelo Limbo. 8 chaves aparecerão. Apenas uma é verde. Elas vão embaralhar na sua frente em uma dança hipnótica. Quando a música mandar, você tem poucos segundos para escolher a correta. Se errar... você já sabe o que acontece. 💀
+</details>
 
 ---
 
-## 🛠️ Como Instalar e Rodar
+## ⚡ Diferenciais desta Versão
 
-1.  **Baixe o Projeto:** Extraia a pasta `.zip` em qualquer lugar do seu computador.
-2.  **Instale as Dependências (Opcional):** A `node_modules` não esta
-      inclusa, abra o terminal na pasta e digite:
-    ```bash
-    npm install
-    ```
-3.  **Iniciar o Jogo:**
-    - Basta dar dois cliques no atalho **LimboKeys** com
-      simbolo de uma chave verde.
-    - O jogo abrirá automaticamente após alguns segundos.
+🚀 **Ultra-Leve:** Diferente das builds convencionais de Electron que pesam mais de 200MB, nosso projeto inteiro tem apenas alguns MBs.  
+👻 **Silent Launch:** O jogo inicia diretamente, sem aquelas janelas pretas chatas de terminal (CMD) abrindo no fundo.  
+🧠 **Otimização Extrema:** Código 100% focado em processamento lógico eficiente, sem engines de terceiros atrapalhando o FPS.  
+🎭 **Dificuldades Customizadas:** Jogue desde o *Easy* até o *Extreme Demon*, ou explore as chaves e segredos ocultos do jogo!
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🤫 Códigos Secretos
 
-- **Linguagem:** JavaScript (Node.js)
-- **Framework:** Electron (para interface desktop)
-- **Scripting:** VBScript (para execução oculta do terminal)
-- **Matemática:** Cálculos de geometria para animação das chaves.
+Cansado das dificuldades normais? No menu principal, clique no botão **OPÇÕES** e digite um dos códigos abaixo para acessar os Modos Secretos:
+
+| Código | Dificuldade | O que acontece? |
+| :---: | :--- | :--- |
+| 🛡️ `123` | **Modo Passeio** | As chaves nem sequer se movem! Perfeito pra quem só quer ganhar e ouvir a música de vitória. |
+| 🔥 `666` | **Pesadelo** | Uma velocidade diabólica, mais rápida que o *Extreme Demon*. Você vai precisar de reflexos absurdos. |
+| 💀 `67` | **Impossível** | A velocidade da luz. As chaves piscam pela tela como se estivessem se teletransportando. Boa sorte (você vai precisar). |
 
 ---
 
-## 📌 Notas de Desenvolvimento
+## 💻 Pré-requisitos e Instalação
 
-Este projeto foi desenvolvido com foco em contornar as limitações de hardware, provando que é possível criar ferramentas funcionais e divertidas sem a necessidade de frameworks pesados e instalações complexas.
+Para rodar essa maravilha, você só precisa do **Node.js** na sua máquina.
 
-> "Focus. 🔑🔑🔑🔑🔑🔑🔑🔑"
+1. **Baixe o Node.js:** [Clique aqui para a versão recomendada (LTS)](https://nodejs.org/dist/v20.12.2/node-v20.12.2-x64.msi)
+2. **Clone ou Baixe o Repositório:** Extraia no seu PC.
+3. (Opcional) Abra o terminal na pasta e instale as dependências:
+   ```bash
+   npm install
+   ```
+4. **Jogue!** Basta rodar no terminal com `npm start` ou usar o atalho script pra abrir direto, e mergulhar no Limbo.
+
+---
+
+## 🛠️ Stack Tecnológica
+
+<div align="center">
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" />
+  <img src="https://img.shields.io/badge/Electron-191970?style=for-the-badge&logo=Electron&logoColor=white" />
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" />
+</div>
+
+- **Scripting:** VBScript (para execução oculta).
+- **Engine Core:** Sistema customizado de geometria para simulação de física e Swap de janelas em tempo real!
+
+---
+
+<div align="center">
+  <h3>"Focus." 🗝️🔑🔑🔑🔑🔑🔑🔑</h3>
+  <i>Desenvolvido com muita dor, sofrimento e café por Asaf.</i>
+</div>

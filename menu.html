@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -10,67 +11,189 @@ body {
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     height: 100vh;
+    overflow: hidden;
 }
-h1 { font-size: 3em; color: #0f8; text-shadow: 0 0 20px #0f8; margin-bottom: 10px; }
-p { color: #888; margin-bottom: 30px; font-size: 1.1em; }
-#status { color: #ff0; font-size: 1.2em; margin-bottom: 20px; }
-button {
+h1 { 
+    font-size: 4em; 
+    color: #0f8; 
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5); 
+    margin-bottom: 5px; 
+    letter-spacing: 5px;
+}
+p { color: #aaa; margin-bottom: 40px; font-size: 1.2em; }
+
+.diff-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.diff-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid #333;
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 120px;
+}
+
+.diff-btn:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-5px);
+}
+
+.diff-btn.selected {
+    border-color: #0f8;
+    background: rgba(0, 255, 136, 0.15);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+    transform: translateY(-5px);
+}
+
+.diff-btn img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 15px;
+    object-fit: contain;
+    /* Placeholder fallback if image is missing */
+    background-color: #222;
+    border-radius: 10px;
+}
+
+.diff-btn span {
+    font-weight: bold;
+    font-size: 1em;
+    text-align: center;
+    color: #ddd;
+}
+
+.diff-btn.selected span {
+    color: #0f8;
+}
+
+button#btn {
     background: none; border: 2px solid #0f8; color: #0f8;
-    padding: 15px 40px; font-size: 1.3em; cursor: pointer;
+    padding: 15px 60px; font-size: 1.5em; cursor: pointer;
+    transition: 0.2s;
+    border-radius: 8px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+button#btn:hover { background: #0f8; color: #000; box-shadow: 0 0 20px #0f8; }
+
+button#opts-btn {
+    background: none; border: 1px solid #555; color: #aaa;
+    padding: 10px 20px; font-size: 1em; cursor: pointer;
+    transition: 0.2s;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+button#opts-btn:hover { border-color: #fff; color: #fff; }
+
+#opts-menu {
+    display: none;
+    margin-top: 15px;
+    flex-direction: row;
+    gap: 10px;
+}
+#secret-code {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background: #222;
+    color: #fff;
+    font-size: 1em;
+    outline: none;
+}
+#secret-code:focus { border-color: #0f8; }
+#apply-code {
+    background: #333;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
     transition: 0.2s;
 }
-button:hover { background: #0f8; color: #000; }
-button:disabled { border-color: #555; color: #555; cursor: default; background: none; }
-#result { font-size: 1.5em; margin-top: 20px; display: none; }
+#apply-code:hover { background: #0f8; color: #000; border-color: #0f8; }
+
 </style>
 </head>
 <body>
 <h1>LIMBO</h1>
-<p>Encontre a chave verde.</p>
-<div id="status">Carregando música...</div>
-<button id="btn" disabled>JOGAR</button>
-<div id="result"></div>
+<p>Selecione a dificuldade e encontre a chave verde.</p>
 
-<audio id="music" preload="auto" src="sounds/limbo.mp3"></audio>
+<div class="diff-container">
+    <div class="diff-btn" data-diff="easy">
+        <img src="images/easy.jpg" alt="Easy">
+        <span>EASY</span>
+    </div>
+    <div class="diff-btn selected" data-diff="normal">
+        <img src="images/normal.jpg" alt="Normal">
+        <span>NORMAL</span>
+    </div>
+    <div class="diff-btn" data-diff="dificil">
+        <img src="images/hard.jpg" alt="Hard">
+        <span>HARD</span>
+    </div>
+    <div class="diff-btn" data-diff="easy_demon">
+        <img src="images/easy_demon.jpg" alt="Easy Demon">
+        <span>EASY DEMON</span>
+    </div>
+    <div class="diff-btn" data-diff="extreme_demon">
+        <img src="images/extreme_demon.jpg" alt="Extreme Demon">
+        <span>EXTREME DEMON</span>
+    </div>
+</div>
+
+<button id="btn">JOGAR</button>
+<button id="opts-btn">OPÇÕES</button>
+<div id="opts-menu">
+    <input type="text" id="secret-code" placeholder="Código Secreto...">
+    <button id="apply-code">OK</button>
+</div>
 
 <script>
 const { ipcRenderer } = require('electron');
-const music = document.getElementById('music');
 const btn = document.getElementById('btn');
-const status = document.getElementById('status');
-const result = document.getElementById('result');
+const optsBtn = document.getElementById('opts-btn');
+const optsMenu = document.getElementById('opts-menu');
+const applyCode = document.getElementById('apply-code');
+const secretCode = document.getElementById('secret-code');
+const diffBtns = document.querySelectorAll('.diff-btn');
+let selectedDiff = 'normal';
 
-// Pre-carrega a musica e faz seek pro 3:03
-music.addEventListener('loadeddata', () => {
-    music.currentTime = 178.3;
+diffBtns.forEach(b => {
+    b.addEventListener('click', () => {
+        diffBtns.forEach(x => x.classList.remove('selected'));
+        b.classList.add('selected');
+        selectedDiff = b.getAttribute('data-diff');
+    });
 });
-
-music.addEventListener('seeked', () => {
-    status.textContent = 'Pronto!';
-    btn.disabled = false;
-}, { once: true });
 
 btn.onclick = () => {
+    btn.innerText = 'CARREGANDO...';
     btn.disabled = true;
-    status.textContent = '';
-    result.style.display = 'none';
-    ipcRenderer.send('start-game');
+    ipcRenderer.send('start-game', selectedDiff);
 };
 
-ipcRenderer.on('play-music', () => {
-    music.play();
-});
+optsBtn.onclick = () => {
+    optsMenu.style.display = optsMenu.style.display === 'flex' ? 'none' : 'flex';
+};
 
-ipcRenderer.on('stop-music', () => {
-    music.pause();
-});
-
-ipcRenderer.on('show-result', (e, won) => {
-    btn.disabled = false;
-    result.style.display = 'block';
-    result.textContent = won ? '✅ FOCO TOTAL! VOCÊ ACERTOU!' : '❌ ERROU! TENTE NOVAMENTE.';
-    result.style.color = won ? '#0f8' : '#f44';
-});
+applyCode.onclick = () => {
+    const code = secretCode.value.trim();
+    if (code === '67' || code === '666' || code === '123') {
+        btn.innerText = 'CARREGANDO...';
+        btn.disabled = true;
+        ipcRenderer.send('start-game', 'secret_' + code);
+    } else {
+        alert('Código secreto inválido.');
+    }
+};
 </script>
 </body>
 </html>
